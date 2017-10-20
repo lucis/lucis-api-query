@@ -1,0 +1,11 @@
+{
+  "name": "lucis-api-query",
+  "version": "0.0.1",
+  "description": "Adaptação do mongoose-api-query para necessidades mais comuns",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Luciano Júnior <luciannojunior@gmail.com> (http://juniorluciano.com)",
+  "license": "ISC"
+}
