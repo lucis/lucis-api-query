@@ -1,4 +1,4 @@
-module.exports = exports = function getSearchParams (schema) {
+function pluginMongoose (schema) {
 
   schema.statics.getSearchParams = function(rawParams) {
 
@@ -223,3 +223,54 @@ module.exports = exports = function getSearchParams (schema) {
       });
   }
 };
+
+// TODO: tornar ou tudo inglês ou portugues para não precisar aquelas funções util
+function middlewareExpress (req, res, next) {
+  req.query.pagina = (typeof req.query.pagina === 'string') ? parseInt(req.query.pagina, 10) || 1 : 1;
+
+  req.query.resultadosPorPagina = (typeof req.query.resultadosPorPagina === 'string') ? parseInt(req.query.resultadosPorPagina, 10) || 0 : 10;
+
+  if (req.query.resultadosPorPagina > 50)
+  req.query.resultadosPorPagina = 50;
+
+  if (req.query.pagina < 1)
+  req.query.pagina = 1;
+
+  if (req.query.resultadosPorPagina < 0)
+  req.query.resultadosPorPagina = 0;
+
+  req.skip = req.offset = (req.query.pagina * req.query.resultadosPorPagina) - req.query.resultadosPorPagina;
+
+  res.locals.paginacao = {};
+  res.locals.paginacao.skip = req.skip;
+  res.locals.paginacao.pagina = req.query.pagina;
+  res.locals.paginacao.resultadosPorPagina = req.query.resultadosPorPagina
+
+  delete req.query.pagina;
+  delete req.query.resultadosPorPagina;
+  next();
+};
+
+function montaEntidadePaginacao(resposta){
+  return {
+          totalDeEntidades: resposta.total,
+          entidades: resposta.docs,
+          pagina: resposta.page,
+          resultadosPorPagina: resposta.limit,
+          totalDePaginas: resposta.pages
+      }
+};
+
+function montaConfigPaginacao(paginacao, campos, populate){
+  return { 
+      page: paginacao.pagina, 
+      limit: paginacao.resultadosPorPagina, 
+      lean: true,
+      select: campos,
+      populate: populate
+  };
+};
+
+const biblioteca = {pluginMongoose, middlewareExpress, montaEntidadePaginacao, montaConfigPaginacao};
+
+module.exports = exports = biblioteca;
