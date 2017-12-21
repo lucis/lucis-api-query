@@ -1,3 +1,5 @@
+const jsonpatch = require('fast-json-patch');
+
 function pluginMongoose (schema) {
 
   function getSearchParams (rawParams) {
@@ -242,6 +244,11 @@ function pluginMongoose (schema) {
       });
     };
   };
+
+  schema.statics.findByIdAndPatch = function(callback){
+    
+  };
+
 };
 
 /**
