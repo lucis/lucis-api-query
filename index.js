@@ -156,7 +156,7 @@ function pluginMongoose (schema) {
 
   schema.statics.paginate = function(query, options, callback){
       query = query || {};
-      options = Object.assign({}, paginate.options, options);
+      options = Object.assign({}, options);
       let select = options.select;
       let sort = options.sort;
       let populate = options.populate;
@@ -274,7 +274,7 @@ function getDataFromReq (req, res) {
   delete req.query.limit;
 
   // Data regarding selection and paginate
-  const { select, paginate } = req.query;
+  let { select, paginate } = req.query;
   select =  (typeof select === 'string') ? select.replace(',', ' ') : null;
   paginate =  (typeof paginate === 'string') ? paginate.replace(',', ' ') : null;
 
