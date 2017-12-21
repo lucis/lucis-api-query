@@ -1,6 +1,6 @@
 {
   "name": "lucis-api-query",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Adaptação do mongoose-api-query para necessidades mais comuns",
   "main": "index.js",
   "scripts": {
