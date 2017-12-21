@@ -160,8 +160,7 @@ function pluginMongoose (schema) {
       let select = options.select;
       let sort = options.sort;
       let populate = options.populate;
-      let lean = options.lean || true;
-      let leanWithId = options.leanWithId || true;
+      let lean = options.lean === false ? false : true;
       let limit = options.limit ? options.limit : 10;
       let page, offset, skip, promises;
       if (options.offset) {
@@ -202,9 +201,11 @@ function pluginMongoose (schema) {
       }
       promises = Object.keys(promises).map((x) => promises[x]);
       return Promise.all(promises).then((data) => {
+        // Por algum motivo isso funcionou algum dia, mesmo ele transformando em array...
+        // TODO: Melhorar a busca paralele
         let result = {
-          docs: data.docs,
-          total: data.count,
+          docs: data[0],
+          total: data[1],
           limit: limit
         };
         if (offset !== undefined) {
