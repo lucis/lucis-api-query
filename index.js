@@ -203,17 +203,19 @@ function pluginMongoose (schema) {
       return Promise.all(promises).then((data) => {
         // Por algum motivo isso funcionou algum dia, mesmo ele transformando em array...
         // TODO: Melhorar a busca paralele
+        const docs = data[0];
+        const total = data[1];
         let result = {
-          docs: data[0],
-          total: data[1],
-          limit: limit
+          docs,
+          total,
+          limit
         };
         if (offset !== undefined) {
           result.offset = offset;
         }
         if (page !== undefined) {
           result.page = page;
-          result.pages = Math.ceil(data.count / limit) || 1;
+          result.pages = Math.ceil(total / limit) || 1;
         }
         if (typeof callback === 'function') {
           return callback(null, result);
@@ -286,28 +288,6 @@ function getDataFromReq (req, res) {
 
   return lucisApiData;
 };
-
-// TODO: Não deve ser necessário
-// function montaEntidadePaginacao(resposta){
-//   return {
-//           totalDeEntidades: resposta.total,
-//           entidades: resposta.docs,
-//           pagina: resposta.page,
-//           resultadosPorPagina: resposta.limit,
-//           totalDePaginas: resposta.pages
-//       }
-// };
-
-// TODO: Não deve ser necessário
-// function montaConfigPaginacao(paginacao, campos, populate){
-//   return { 
-//       page: paginacao.pagina, 
-//       limit: paginacao.resultadosPorPagina, 
-//       lean: true,
-//       select: campos,
-//       populate: populate
-//   };
-// };
 
 const biblioteca = {pluginMongoose};
 
