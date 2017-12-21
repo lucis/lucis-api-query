@@ -1,7 +1,7 @@
 # lucis-api-query
 
-## Motivação
-This library merge three other libraries used for paginating and querying resources in Mongoose:  `mongoose-paginate`, `mongoose-api-query` and.
+## Motivation
+This library merge three other libraries used for paginating and querying resources in Mongoose:  `mongoose-paginate`, `mongoose-api-query` and. *You will just import and set it on Mongoose and pagination + advanced querying will work out of the box!*
 
 `mongoose-paginate` works creating a query in the database using pagination's parameters.
 `express-paginate` parses the parameters coming from the request's query params, among other things.
