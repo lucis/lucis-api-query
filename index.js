@@ -156,12 +156,11 @@ function pluginMongoose (schema) {
 
   schema.statics.paginate = function(query, options, callback){
       query = query || {};
-      options = Object.assign({}, paginate.options, options);
+      options = Object.assign({}, options);
       let select = options.select;
       let sort = options.sort;
       let populate = options.populate;
-      let lean = options.lean || true;
-      let leanWithId = options.leanWithId || true;
+      let lean = options.lean === false ? false : true;
       let limit = options.limit ? options.limit : 10;
       let page, offset, skip, promises;
       if (options.offset) {
@@ -202,17 +201,21 @@ function pluginMongoose (schema) {
       }
       promises = Object.keys(promises).map((x) => promises[x]);
       return Promise.all(promises).then((data) => {
+        // Por algum motivo isso funcionou algum dia, mesmo ele transformando em array...
+        // TODO: Melhorar a busca paralele
+        const docs = data[0];
+        const total = data[1];
         let result = {
-          docs: data.docs,
-          total: data.count,
-          limit: limit
+          docs,
+          total,
+          limit
         };
         if (offset !== undefined) {
           result.offset = offset;
         }
         if (page !== undefined) {
           result.page = page;
-          result.pages = Math.ceil(data.count / limit) || 1;
+          result.pages = Math.ceil(total / limit) || 1;
         }
         if (typeof callback === 'function') {
           return callback(null, result);
@@ -274,7 +277,7 @@ function getDataFromReq (req, res) {
   delete req.query.limit;
 
   // Data regarding selection and paginate
-  const { select, paginate } = req.query;
+  let { select, paginate } = req.query;
   select =  (typeof select === 'string') ? select.replace(',', ' ') : null;
   paginate =  (typeof paginate === 'string') ? paginate.replace(',', ' ') : null;
 
@@ -285,28 +288,6 @@ function getDataFromReq (req, res) {
 
   return lucisApiData;
 };
-
-// TODO: Não deve ser necessário
-// function montaEntidadePaginacao(resposta){
-//   return {
-//           totalDeEntidades: resposta.total,
-//           entidades: resposta.docs,
-//           pagina: resposta.page,
-//           resultadosPorPagina: resposta.limit,
-//           totalDePaginas: resposta.pages
-//       }
-// };
-
-// TODO: Não deve ser necessário
-// function montaConfigPaginacao(paginacao, campos, populate){
-//   return { 
-//       page: paginacao.pagina, 
-//       limit: paginacao.resultadosPorPagina, 
-//       lean: true,
-//       select: campos,
-//       populate: populate
-//   };
-// };
 
 const biblioteca = {pluginMongoose};
 
