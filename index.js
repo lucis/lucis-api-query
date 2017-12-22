@@ -245,10 +245,31 @@ function pluginMongoose (schema) {
     };
   };
 
-  schema.statics.findByIdAndPatch = function(callback){
-    
-  };
+  /**
+   * Be careful: some patches may not be applied to mongoose model (deleting stuff, e.g)
+   */
+  schema.statics.findByIdAndPatch = function(entidadeId, patches, callback){
+    this.findById(entidadeId)
+    .exec((err, entidade)=>{
+      if (err){
+        return callback(err);
+      }
+      jsonpatch.apply(entidade,patches);
+      const validacao = entidade.validateSync();
 
+      if (validacao){
+          const erro = Object.values(validacao.errors)[0];
+          return callback(erro);
+      }
+      entidade.save((err)=>{
+        if (err){
+          return callback(err);
+        }
+        return callback
+      });
+    });
+  
+  };
 };
 
 /**
