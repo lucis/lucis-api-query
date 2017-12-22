@@ -249,7 +249,7 @@ function pluginMongoose (schema) {
       if (err){
         return callback(err);
       }
-      jsonpatch.apply(entidade,patches);
+      jsonpatch.applyPatch(entidade, patches);
       const validacao = entidade.validateSync();
 
       if (validacao){
