@@ -260,7 +260,7 @@ function pluginMongoose (schema) {
         if (err){
           return callback(err);
         }
-        return callback
+        return callback(null, entidade)
       });
     });
   
