@@ -196,7 +196,7 @@ function pluginMongoose (schema) {
       promises = Object.keys(promises).map((x) => promises[x]);
       return Promise.all(promises).then((data) => {
         // Por algum motivo isso funcionou algum dia, mesmo ele transformando em array...
-        // TODO: Melhorar a busca paralele
+        // TODO: Melhorar a busca paralela
         const docs = data[0];
         const total = data[1];
         let result = {
@@ -228,9 +228,12 @@ function pluginMongoose (schema) {
     return (req, res) => {
       const lucisApiData = getDataFromReq(req, res);
       const parsedParams = getSearchParams(req.query);
-      this.paginate(parsedParams, lucisApiData, (data)=>{
+      this.paginate(parsedParams, lucisApiData, (err, data)=>{
         if (callback){
-          return callback(req, res, data);
+          return callback(req, res, err, data);
+        }
+        if (err){
+          return res.status(500).json({msg: 'Something went wrong!'});
         }
         return res.json(data);
       });
