@@ -192,14 +192,6 @@ function pluginMongoose (schema) {
           docs: docsQuery.exec(),
           count: this.count(query).exec()
         };
-        if (lean && leanWithId) {
-          promises.docs = promises.docs.then((docs) => {
-            docs.forEach((doc) => {
-              doc.id = String(doc._id);
-            });
-            return docs;
-          });
-        }
       }
       promises = Object.keys(promises).map((x) => promises[x]);
       return Promise.all(promises).then((data) => {
