@@ -9,6 +9,6 @@
   "author": "Luciano Júnior <luciannojunior@gmail.com> (http://juniorluciano.com)",
   "license": "ISC",
   "dependencies": {
-    "fast-json-patch": "^2.0.6"
+    "json-patch-mongoose": "^0.5.0"
   }
 }

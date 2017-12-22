@@ -1,4 +1,4 @@
-const jsonpatch = require('fast-json-patch');
+const jsonpatch = require('json-patch-mongoose');
 
 function pluginMongoose (schema) {
 
@@ -249,7 +249,7 @@ function pluginMongoose (schema) {
       if (err){
         return callback(err);
       }
-      jsonpatch.applyPatch(entidade, patches);
+      jsonpatch.apply(entidade, patches);
       const validacao = entidade.validateSync();
 
       if (validacao){
@@ -260,7 +260,7 @@ function pluginMongoose (schema) {
         if (err){
           return callback(err);
         }
-        return callback(null, entidade)
+        return callback(null, entidade);
       });
     });
   
