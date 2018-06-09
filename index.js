@@ -223,7 +223,13 @@ function pluginMongoose (schema) {
   /**
    * Função que efetivamente será chamada pelo serviço/router
    */
-  schema.statics.lucisApiQuery = function(callback){
+  schema.statics.lucisApiQuery = function({ query, orderBy, limit, page}){
+    const lucisApiData = getSelectDataFromObject({ limit, page, orderBy});
+    const parsedParams = getSearchParams(query);
+    return this.paginate(parsedParams, lucisApiData);
+  };
+
+  schema.statics.restQuery = function(callback){
     // TODO: O mongoose-paginate não trata erros, tem que adicionar isso e tratar aqui também
     return (req, res) => {
       const lucisApiData = getDataFromReq(req, res);
@@ -274,7 +280,7 @@ function pluginMongoose (schema) {
  * @param {*} res 
  * @param {*} next 
  */
-function getDataFromReq (req, res) {
+function getDataFromReq (req) {
   // Data regarding pagination
   req.query.page = (typeof req.query.page === 'string') ? parseInt(req.query.page, 10) || 1 : 1;
 
@@ -310,6 +316,22 @@ function getDataFromReq (req, res) {
   delete req.query.paginate;
 
   return lucisApiData;
+};
+
+function getSelectDataFromObject ({ page = 1, limit = 10, orderBy}) {
+  if (limit > 50) limit = 50;
+  if (page < 1) page = 1;
+  if (limit < 0) limit = 0;
+  skip = (page * limit) - limit;
+
+  if (orderBy) {
+    // orderBy deve ser da seguinte maneira: +nome,-sobrenome
+    const sort = {};
+    orderBy.split(',').map((clausula)=>{
+      sort[clausula.slice(1)] = (clausula[0] === '+')?  1 : -1;
+    });
+  }
+  return { skip, page, limit, sort};
 };
 
 const biblioteca = {pluginMongoose};
