@@ -2,8 +2,15 @@ const jsonpatch = require('json-patch-mongoose');
 
 function pluginMongoose (schema) {
 
+  function queryStringToMap(str) {
+    return JSON.parse('{"' + decodeURI(str.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}');
+  }
+
   function getSearchParams (rawParams) {
 
+    if (typeof rawParams === 'string') {
+      rawParams = queryStringToMap(rawParams);
+    }
     var model = this;
 
     var convertToBoolean = function (str) {
@@ -214,9 +221,7 @@ function pluginMongoose (schema) {
         if (typeof callback === 'function') {
           return callback(null, result);
         }
-        let promise = new Promise();
-        promise.resolve(result);
-        return promise;
+        return Promise.resolve(result);
       });
   }
 
@@ -324,9 +329,9 @@ function getSelectDataFromObject ({ page = 1, limit = 10, orderBy}) {
   if (limit < 0) limit = 0;
   skip = (page * limit) - limit;
 
+  const sort = {};
   if (orderBy) {
     // orderBy deve ser da seguinte maneira: +nome,-sobrenome
-    const sort = {};
     orderBy.split(',').map((clausula)=>{
       sort[clausula.slice(1)] = (clausula[0] === '+')?  1 : -1;
     });
