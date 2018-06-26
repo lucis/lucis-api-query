@@ -42,7 +42,11 @@ function pluginMongoose (schema) {
             searchParams[key] = val;
         }
       };
-      if (matches = lcKey.match(/(.+)\.(.+)/)) {
+      /**
+       * FIXME: Na verdade, após a adição do false, aparentemente o problema de buscar em objetos embedded
+       * se consertou. Agora, o mongoose registra os campos inner como campos do próprio schema.
+       */
+      if (matches = lcKey.match(/(.+)\.(.+)/) && false ) {
         // parse subschema
         if (schema.paths[matches[1]].constructor.name === "DocumentArray" ||
             schema.paths[matches[1]].constructor.name === "Mixed") {
